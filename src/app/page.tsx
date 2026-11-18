@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Navbar from '@/components/layout/Navbar';
 import ScrollProgressDots from '@/components/layout/ScrollProgressDots';
 import Footer from '@/components/layout/Footer';
@@ -12,9 +13,16 @@ import LocationSection from '@/components/sections/LocationSection';
 import MemberPortalModal from '@/components/modals/MemberPortalModal';
 import JoinMemberModal from '@/components/modals/JoinMemberModal';
 
-export default function HomePage() {
+function HomeContent() {
   const [isMemberPortalOpen, setMemberPortalOpen] = useState(false);
   const [isJoinMemberOpen, setJoinMemberOpen] = useState(false);
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    if (searchParams.get('login') === 'required') {
+      setMemberPortalOpen(true);
+    }
+  }, [searchParams]);
 
   return (
     <>
@@ -52,5 +60,13 @@ export default function HomePage() {
         onClose={() => setJoinMemberOpen(false)}
       />
     </>
+  );
+}
+
+export default function HomePage() {
+  return (
+    <Suspense fallback={null}>
+      <HomeContent />
+    </Suspense>
   );
 }
